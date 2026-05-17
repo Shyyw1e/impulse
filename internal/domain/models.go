@@ -6,44 +6,34 @@ import (
 	"github.com/Shyyw1e/impulse/internal/config"
 )
 
-type Dungeon struct {
-	FloorsWithMonsters 		int
-	MonstersPerFloor		int
-	MonstersKilledByFloor	[]int
-	BossKilled				bool
+type PlayerState struct {
+	ID         int
+	Registered bool
+	InDungeon  bool
+	Floor      int
+	HP         int
+	Status     TrialStatus
+	Finished   bool
+
+	MonstersKilledByFloor []int
+	BossKilled            bool
+
+	EnteredAt  time.Time
+	FinishedAt time.Time
+
+	FloorEnterAt        time.Time
+	FloorClearDurations []time.Duration
+
+	BossEnterAt      time.Time
+	BossKillDuration time.Duration
 }
 
-func NewDungeon(cfg *config.Config) *Dungeon {
-	FloorsWithMonsters:= cfg.Floors - 1
-
-	if FloorsWithMonsters == 0 {
-		return &Dungeon{BossKilled: false}
+func NewPlayer(id int, cfg *config.Config) *PlayerState {
+	return &PlayerState{
+		ID:                    id,
+		HP:                    100,
+		Floor:                 0,
+		Status:                StatusFail,
+		MonstersKilledByFloor: make([]int, cfg.Floors-1),
 	}
-
-	dunge := Dungeon{
-		FloorsWithMonsters: cfg.Floors - 1,
-		MonstersPerFloor: cfg.Monsters,
-		BossKilled: false,
-	}
-	
-	killedMonsters := make([]int, dunge.FloorsWithMonsters)
-	for i := 0; i < dunge.MonstersPerFloor; i++ {
-		killedMonsters[i] = dunge.MonstersPerFloor
-	}
-
-	dunge.MonstersKilledByFloor = killedMonsters
-
-	return &dunge
-}
-
-type Player struct {
-	ID		int
-	Registered 	bool
-	InDungeon	bool
-	Floor		int
-	HP			int
-	Status		TrialStatus
-
-	EnteredAt   time.Time
-	FinishedAt	time.Time
 }
